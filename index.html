@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="reset.css" rel="stylesheet" />
-    <title>Document</title>
-  </head>
-  <body></body>
-  <script src="index.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2048 과제</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="topbar">
+      <h1>2048</h1>
+      <div class="scores">
+        <div class="score"><span>점수</span><strong id="score">0</strong></div>
+        <button id="newGame" class="btn">새 게임</button>
+      </div>
+    </header>
+
+    <section id="board" class="board" aria-label="2048 보드" role="grid"></section>
+
+    <div id="overlay" class="overlay hidden">
+      <div class="panel">
+        <h2>🎉 128 타일 달성!</h2>
+        <p>게임이 종료되었습니다.</p>
+        <button id="restart" class="btn">다시 시작</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="game.js"></script>
+</body>
 </html>
