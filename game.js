@@ -1,7 +1,7 @@
 function moveMapIn2048Rule(map, direction) {
   const rotated = rotateMap(map, rotateMapDeg[direction])
-  const { result, isMoved } = moveLeft(rotated)
-  return { result: rotateMap(result, revertMapDeg[direction]), isMoved }
+  const { result, isMoved, gained } = moveLeft(rotated)
+  return { result: rotateMap(result, revertMapDeg[direction]), isMoved, gained }
 }
 function rotateMap(map, deg) {
   const R = map.length, C = map[0].length
@@ -12,18 +12,19 @@ function rotateMap(map, deg) {
 }
 function moveLeft(map) {
   const rows = map.map(moveRowLeft)
-  return { result: rows.map(x=>x.result), isMoved: rows.some(x=>x.isMoved) }
+  const gained = rows.reduce((s,x)=>s+x.gained,0)
+  return { result: rows.map(x=>x.result), isMoved: rows.some(x=>x.isMoved), gained }
 }
 function moveRowLeft(row) {
   const red = row.reduce((acc,cell)=>{
-    if(cell===null)return acc
-    if(acc.last===null)return {...acc,last:cell}
-    if(acc.last===cell && cell*2<=TARGET_TILE)return {result:[...acc.result,cell*2],last:null}
-    return {result:[...acc.result,acc.last],last:cell}
-  },{last:null,result:[]})
+    if(cell===null) return acc
+    if(acc.last===null) return {...acc,last:cell,gained:acc.gained}
+    if(acc.last===cell && cell*2<=TARGET_TILE) return {result:[...acc.result,cell*2],last:null,gained:acc.gained+cell*2}
+    return {result:[...acc.result,acc.last],last:cell,gained:acc.gained}
+  },{last:null,result:[],gained:0})
   const arr=[...red.result,red.last]
   const out=Array.from({length:row.length},(_,i)=>arr[i]??null)
-  return {result:out,isMoved:row.some((v,i)=>v!==out[i])}
+  return {result:out,isMoved:row.some((v,i)=>v!==out[i]),gained:red.gained}
 }
 const rotateMapDeg={up:90,right:180,down:270,left:0}
 const revertMapDeg={up:270,right:180,down:90,left:0}
@@ -48,11 +49,9 @@ window.addEventListener("DOMContentLoaded",()=>{
     const d=dir(e.key)
     if(!d)return
     e.preventDefault()
-    const before=sum(state.map)
-    const {result,isMoved}=moveMapIn2048Rule(state.map,d)
+    const {result,isMoved,gained}=moveMapIn2048Rule(state.map,d)
     if(!isMoved)return
-    const after=sum(result)
-    state.score+=after-before
+    state.score+=gained
     state.map=result
     if(reached(state.map,TARGET_TILE)){
       state.finished=true
@@ -94,7 +93,6 @@ function emptyMap(r,c){return Array.from({length:r},()=>Array.from({length:c},()
 function empties(map){const out=[];for(let i=0;i<map.length;i++)for(let j=0;j<map[0].length;j++)if(map[i][j]===null)out.push([i,j]);return out}
 function spawn(map){const e=empties(map);if(!e.length)return false;const[i,j]=e[Math.floor(Math.random()*e.length)];map[i][j]=Math.random()<0.9?2:4;return true}
 function reached(map,t){return map.some(r=>r.some(v=>v!==null&&v>=t))}
-function sum(map){return map.reduce((s,r)=>s+r.reduce((a,v)=>a+(v??0),0),0)}
 function dir(k){if(k==="ArrowUp")return"up";if(k==="ArrowRight")return"right";if(k==="ArrowDown")return"down";if(k==="ArrowLeft")return"left";return null}
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch{}}
 function load(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
