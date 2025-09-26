@@ -10,23 +10,19 @@
   <main class="wrap">
     <header class="topbar">
       <h1>2048</h1>
-      <div class="scores">
+      <div class="controls">
         <div class="score"><span>점수</span><strong id="score">0</strong></div>
-        <button id="newGame" class="btn">새 게임</button>
+        <button id="newGameBtn" class="btn" type="button">새 게임</button>
       </div>
     </header>
-
-    <section id="board" class="board" aria-label="2048 보드" role="grid"></section>
-
+    <section id="board" class="board"></section>
     <div id="overlay" class="overlay hidden">
       <div class="panel">
-        <h2>🎉 128 타일 달성!</h2>
-        <p>게임이 종료되었습니다.</p>
-        <button id="restart" class="btn">다시 시작</button>
+        <h2 id="overlayTitle">128 타일 달성</h2>
+        <button id="restartBtn" class="btn" type="button">다시 시작</button>
       </div>
     </div>
   </main>
-
   <script type="module" src="game.js"></script>
 </body>
 </html>
